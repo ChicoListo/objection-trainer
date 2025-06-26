@@ -45,7 +45,7 @@ export default function ChatInterface() {
         setIsLoading(true);
         const supabase = createClient();
         const { data, error } = await supabase.functions.invoke('generate-objection');
-
+        
         if (error) {
             addMessage('ai', "Lo siento, tuve un problema al generar la objeción. Inténtalo de nuevo.");
         } else {
@@ -63,7 +63,7 @@ export default function ChatInterface() {
             return;
         }
         const currentObjection = lastAiMessage.content as string;
-
+        
         const userResponseText = userInput;
         addMessage('user', userResponseText);
         setUserInput(''); // CORRECCIÓN: Limpiamos el input inmediatamente.
@@ -73,7 +73,7 @@ export default function ChatInterface() {
         const { data: feedbackData, error: functionError } = await supabase.functions.invoke('get-feedback', {
             body: { objection: currentObjection, userResponse: userResponseText }
         });
-
+        
         if (functionError) {
             addMessage('feedback', "No se pudo obtener el feedback. Intenta con otra respuesta.");
         } else {
@@ -81,7 +81,7 @@ export default function ChatInterface() {
             saveSession(currentObjection, userResponseText, feedbackContent);
             addMessage('feedback', <FeedbackCard feedback={feedbackContent} />);
         }
-
+        
         // CORRECCIÓN: El estado de carga se desactiva aquí, al final de la operación.
         setIsLoading(false);
     };
@@ -167,28 +167,28 @@ const ChatMessage = ({ message }: { message: Message }) => {
 const FeedbackCard = ({ feedback }: { feedback: FeedbackContent }) => {
     // ...
     return (
-        <div className="bg-gray-700 border border-green-500 p-4 my-2 rounded-lg space-y-3 animate-fade-in">
-            <div className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                    <BrainCircuit size={20} className="text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-white">Análisis de la IA</h3>
+    <div className="bg-gray-700 border border-green-500 p-4 my-2 rounded-lg space-y-3 animate-fade-in">
+        <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                <BrainCircuit size={20} className="text-white" />
             </div>
-            <div className="flex items-baseline justify-center gap-2">
-                <p className="text-5xl font-bold text-green-400">{feedback.score}</p>
-                <p className="text-xl text-gray-400">/ 10</p>
-            </div>
-            <div>
-                <p className="font-semibold text-gray-300 mb-2">Puntos clave:</p>
-                <ul className="list-none space-y-2">
-                    {feedback.feedback_points.map((point, index) => (
-                        <li key={index} className="flex items-start gap-2 text-sm">
-                            <Star size={16} className="text-yellow-400 mt-0.5 flex-shrink-0" />
-                            <span>{point}</span>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            <h3 className="text-xl font-bold text-white">Análisis de la IA</h3>
         </div>
+        <div className="flex items-baseline justify-center gap-2">
+            <p className="text-5xl font-bold text-green-400">{feedback.score}</p>
+            <p className="text-xl text-gray-400">/ 10</p>
+        </div>
+        <div>
+            <p className="font-semibold text-gray-300 mb-2">Puntos clave:</p>
+            <ul className="list-none space-y-2">
+                {feedback.feedback_points.map((point, index) => (
+                    <li key={index} className="flex items-start gap-2 text-sm">
+                        <Star size={16} className="text-yellow-400 mt-0.5 flex-shrink-0" />
+                        <span>{point}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    </div>
     )
 };
